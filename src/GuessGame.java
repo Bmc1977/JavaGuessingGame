@@ -5,24 +5,41 @@ import java.util.Scanner;
 public class GuessGame extends Game {
     private int hiddenNumber;
     private Scanner input;
-    private int lower, upper;
+    private int lower, upper, guess, numberGuesses;
     public GuessGame() {
         isRunning = true;
         hiddenNumber = newHiddenNumber(0, 1);
         input = new Scanner(System.in);
+        guess = -1;
+        numberGuesses = 0;
     }
 
     private int newHiddenNumber(int lower, int upper) {
         Random rand = new Random();
-        return rand.nextInt(upper + lower + 1) - lower;
+        return rand.nextInt(lower, upper + 1);
     }
 
     @Override
     public void run() {
         start();
-        if (isRunning) {
-            menu();
+        menu();
+        while (guess != hiddenNumber) {
+            getGuess();
+            if (guess > hiddenNumber) {
+                System.out.println("Too high!");
+            } else if (guess < hiddenNumber) {
+                System.out.println("Too low!");
+            }
+            numberGuesses++;
         }
+        System.out.println("Congrats that was the hidden number!");
+        System.out.println("It took you " + numberGuesses + " guesses! Good job!");
+    }
+
+    public void reset() {
+        hiddenNumber = newHiddenNumber(lower, upper);
+        guess = -1;
+        numberGuesses = 0;
     }
 
     private void start() {
@@ -36,8 +53,30 @@ public class GuessGame extends Game {
         }
     }
 
+    protected void getGuess() {
+        guess = 0;
+        System.out.print("Please enter your guess: ");
+        try {
+            guess = input.nextInt();
+        } catch (Exception e) {
+            System.out.println("You did not enter valid input. Please run the program again.");
+            System.exit(1);
+        }
+    }
+
     protected void menu() {
         getBoundsFromUser();
+    }
+
+    @Override
+    boolean isRunning() {
+        return isRunning;
+    }
+
+    public boolean playAgain() {
+        System.out.print("Would you like to play again? (y/n) ");
+        String userInput = input.next();
+        return userInput.charAt(0) == 'y';
     }
 
     private void getBoundsFromUser() {
@@ -55,10 +94,12 @@ public class GuessGame extends Game {
             System.out.println("You did not enter valid input. Please run the program again.");
             System.exit(1);
         }
+        hiddenNumber = newHiddenNumber(lower, upper);
     }
 
     @Override
     void quit() {
         isRunning  = false;
+        System.out.println("Thank you for playing!");
     }
 }

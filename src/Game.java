@@ -4,4 +4,5 @@ public abstract class Game {
     abstract void quit();
     abstract void run();
     abstract void menu();
+    abstract boolean isRunning();
 }
